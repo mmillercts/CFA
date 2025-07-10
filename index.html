@@ -1999,6 +1999,19 @@
     </div>
 
     <script>
+        // Get employees
+fetch('/.netlify/functions/employees')
+  .then(response => response.json())
+  .then(data => console.log(data));
+
+// Add an employee
+fetch('/.netlify/functions/employees', {
+  method: 'POST',
+  body: JSON.stringify({ name: 'Alice', role: 'Manager' }),
+})
+  .then(response => response.json())
+  .then(data => console.log(data));
+    
         let currentDeleteElement = null;
         let currentEditElement = null;
         let isEditMode = false;
