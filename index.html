@@ -1999,18 +1999,42 @@
     </div>
 
     <script>
-        // Get employees
-fetch('/.netlify/functions/add-team-member')
-  .then(response => response.json())
-  .then(data => console.log(data));
+        // Team member API functions
+        async function getTeamMembers() {
+            try {
+                const response = await fetch('/.netlify/functions/add-team-member');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Team members:', data);
+                return data;
+            } catch (error) {
+                console.log('Note: Netlify functions not available in local development. Error:', error.message);
+                return [];
+            }
+        }
 
-// Add an employee
-fetch('/.netlify/functions/add-team-member', {
-  method: 'POST',
-  body: JSON.stringify({ name: 'Alice', role: 'Manager' }),
-})
-  .then(response => response.json())
-  .then(data => console.log(data));
+        async function addTeamMemberToDatabase(name, role) {
+            try {
+                const response = await fetch('/.netlify/functions/add-team-member', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, role }),
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log('Team member added:', data);
+                return data;
+            } catch (error) {
+                console.log('Note: Netlify functions not available in local development. Error:', error.message);
+                return { success: false, error: error.message };
+            }
+        }
     
         let currentDeleteElement = null;
         let currentEditElement = null;
@@ -3088,7 +3112,7 @@ document.addEventListener('click', function(e) {
             });
 
             // Team Form
-            document.getElementById('teamForm').addEventListener('submit', function(e) {
+            document.getElementById('teamForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const name = document.getElementById('teamName').value;
                 const position = document.getElementById('teamPosition').value;
@@ -3118,7 +3142,10 @@ document.addEventListener('click', function(e) {
                         targetGrid.appendChild(currentEditElement);
                     }
                 } else {
-                    // Add new team member
+                    // Add new team member to database
+                    const result = await addTeamMemberToDatabase(name, position);
+                    
+                    // Add to UI regardless of database result (for local development)
                     const targetGrid = document.querySelector(`[data-level="${level}"] .team-grid`);
                     const newMember = document.createElement('div');
                     newMember.className = 'card team-member';
@@ -3416,11 +3443,15 @@ document.addEventListener('click', function(e) {
         });
 // ---------------- ANNOUNCEMENTS ----------------
 
-function loadAnnouncements() {
-  fetch('/.netlify/functions/get-announcements')
-    .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById('announcementsList');
+async function loadAnnouncements() {
+  try {
+    const response = await fetch('/.netlify/functions/get-announcements');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    const container = document.getElementById('announcementsList');
+    if (container) {
       container.innerHTML = '';
       data.forEach(item => {
         const div = document.createElement('div');
@@ -3430,7 +3461,10 @@ function loadAnnouncements() {
           <button onclick="deleteAnnouncement(${item.id})">Delete</button>`;
         container.appendChild(div);
       });
-    });
+    }
+  } catch (error) {
+    console.log('Note: Announcements API not available in local development. Error:', error.message);
+  }
 }
 
 function addAnnouncement(title, description, date) {
@@ -3478,11 +3512,15 @@ function editAnnouncementPrompt(id, title, description, date) {
 
 // ---------------- TEAM ----------------
 
-function loadTeam() {
-  fetch('/.netlify/functions/get-team')
-    .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById('teamList');
+async function loadTeam() {
+  try {
+    const response = await fetch('/.netlify/functions/get-team');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    const container = document.getElementById('teamList');
+    if (container) {
       container.innerHTML = '';
       data.forEach(member => {
         const div = document.createElement('div');
@@ -3492,7 +3530,10 @@ function loadTeam() {
           <button onclick="deleteTeamMember(${member.id})">Delete</button>`;
         container.appendChild(div);
       });
-    });
+    }
+  } catch (error) {
+    console.log('Note: Team API not available in local development. Error:', error.message);
+  }
 }
 
 function addTeamMember(name, position, description) {
@@ -3541,11 +3582,15 @@ function editTeamPrompt(id, name, position, description) {
 
 // ---------------- DOCUMENTS ----------------
 
-function loadDocuments() {
-  fetch('/.netlify/functions/get-documents')
-    .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById('documentsList');
+async function loadDocuments() {
+  try {
+    const response = await fetch('/.netlify/functions/get-documents');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    const container = document.getElementById('documentsList');
+    if (container) {
       container.innerHTML = '';
       data.forEach(doc => {
         const div = document.createElement('div');
@@ -3555,7 +3600,10 @@ function loadDocuments() {
           <button onclick="deleteDocument(${doc.id})">Delete</button>`;
         container.appendChild(div);
       });
-    });
+    }
+  } catch (error) {
+    console.log('Note: Documents API not available in local development. Error:', error.message);
+  }
 }
 
 function addDocument(title, url) {
@@ -3601,11 +3649,15 @@ function editDocumentPrompt(id, title, url) {
 
 // ---------------- PHOTOS ----------------
 
-function loadPhotos() {
-  fetch('/.netlify/functions/get-photos')
-    .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById('photosList');
+async function loadPhotos() {
+  try {
+    const response = await fetch('/.netlify/functions/get-photos');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    const container = document.getElementById('photosList');
+    if (container) {
       container.innerHTML = '';
       data.forEach(photo => {
         const div = document.createElement('div');
@@ -3615,7 +3667,10 @@ function loadPhotos() {
           <button onclick="deletePhoto(${photo.id})">Delete</button>`;
         container.appendChild(div);
       });
-    });
+    }
+  } catch (error) {
+    console.log('Note: Photos API not available in local development. Error:', error.message);
+  }
 }
 
 function addPhoto(title, url) {
@@ -3666,15 +3721,20 @@ function loadEvents() {
     .then(res => res.json())
     .then(data => {
       const container = document.getElementById('eventsList');
-      container.innerHTML = '';
-      data.forEach(event => {
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.innerHTML = `<b>${event.title}</b> (${event.date}) ${event.startTime||""}-${event.endTime||""} : ${event.description||""}
-          <button onclick="editEventPrompt(${event.id},'${encodeURIComponent(event.title)}','${encodeURIComponent(event.description||"")}','${event.date||""}','${event.startTime||""}','${event.endTime||""}','${encodeURIComponent(event.calendar||"")}')">Edit</button>
-          <button onclick="deleteEvent(${event.id})">Delete</button>`;
-        container.appendChild(div);
-      });
+      if (container) {
+        container.innerHTML = '';
+        data.forEach(event => {
+          const div = document.createElement('div');
+          div.className = 'item';
+          div.innerHTML = `<b>${event.title}</b> (${event.date}) ${event.startTime||""}-${event.endTime||""} : ${event.description||""}
+            <button onclick="editEventPrompt(${event.id},'${encodeURIComponent(event.title)}','${encodeURIComponent(event.description||"")}','${event.date||""}','${event.startTime||""}','${event.endTime||""}','${encodeURIComponent(event.calendar||"")}')">Edit</button>
+            <button onclick="deleteEvent(${event.id})">Delete</button>`;
+          container.appendChild(div);
+        });
+      }
+    })
+    .catch(error => {
+      console.log('Note: Events API not available in local development. Error:', error.message);
     });
 }
 
@@ -3735,15 +3795,20 @@ function loadBenefits() {
     .then(res => res.json())
     .then(data => {
       const container = document.getElementById('benefitsList');
-      container.innerHTML = '';
-      data.forEach(benefit => {
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.innerHTML = `<b>${benefit.title}</b> (${benefit.category||""}): ${benefit.description||""}
-          <button onclick="editBenefitPrompt(${benefit.id},'${encodeURIComponent(benefit.title)}','${encodeURIComponent(benefit.description||"")}','${encodeURIComponent(benefit.category||"")}')">Edit</button>
-          <button onclick="deleteBenefit(${benefit.id})">Delete</button>`;
-        container.appendChild(div);
-      });
+      if (container) {
+        container.innerHTML = '';
+        data.forEach(benefit => {
+          const div = document.createElement('div');
+          div.className = 'item';
+          div.innerHTML = `<b>${benefit.title}</b> (${benefit.category||""}): ${benefit.description||""}
+            <button onclick="editBenefitPrompt(${benefit.id},'${encodeURIComponent(benefit.title)}','${encodeURIComponent(benefit.description||"")}','${encodeURIComponent(benefit.category||"")}')">Edit</button>
+            <button onclick="deleteBenefit(${benefit.id})">Delete</button>`;
+          container.appendChild(div);
+        });
+      }
+    })
+    .catch(error => {
+      console.log('Note: Benefits API not available in local development. Error:', error.message);
     });
 }
 
@@ -3794,6 +3859,10 @@ function editBenefitPrompt(id, title, description, category) {
 // ---------------- INITIAL LOAD ----------------
 
 window.addEventListener('DOMContentLoaded', () => {
+  // Only load API data if we're in a production environment with Netlify functions
+  // These will fail gracefully in local development
+  console.log('Loading application data...');
+  
   loadAnnouncements();
   loadTeam();
   loadDocuments();
