@@ -10,6 +10,11 @@ export async function handler(event) {
       const employees = await sql('SELECT * FROM employees');
       return {
         statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+        },
         body: JSON.stringify(employees),
       };
     } else if (event.httpMethod === 'POST') {
@@ -17,23 +22,43 @@ export async function handler(event) {
       if (!name || !role) {
         return {
           statusCode: 400,
-          body: JSON.stringify({ error: 'Missing name or role' }),
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+          },
+          body: JSON.stringify({ error: 'Name and role are required' }),
         };
       }
       await sql('INSERT INTO employees (name, role) VALUES ($1, $2)', [name, role]);
       return {
         statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+        },
         body: JSON.stringify({ success: true }),
       };
     }
     return {
       statusCode: 405,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+      },
       body: JSON.stringify({ error: 'Method Not Allowed' }),
     };
   } catch (error) {
     console.error('Function error:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+      },
       body: JSON.stringify({ error: error.message || 'Internal Server Error' }),
     };
   }
