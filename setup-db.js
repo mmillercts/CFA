@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(psql 'postgresql://neondb_owner:npg_czQhIS7p8wuZ@ep-aged-wildflower-ae2tpptv-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require'); // Paste your connection string here
+const sql = neon(process.env.DATABASE_URL);
 
 async function setupTable() {
   await sql`

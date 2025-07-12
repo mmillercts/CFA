@@ -3467,7 +3467,7 @@ async function loadAnnouncements() {
   }
 }
 
-function addAnnouncement(title, description, date) {
+function addAnnouncementToAPI(title, description, date) {
   return fetch('/.netlify/functions/add-announcement', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -3477,7 +3477,7 @@ function addAnnouncement(title, description, date) {
     .then(loadAnnouncements);
 }
 
-function editAnnouncement(id, title, description, date) {
+function editAnnouncementAPI(id, title, description, date) {
   return fetch('/.netlify/functions/edit-announcement', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
@@ -3487,7 +3487,7 @@ function editAnnouncement(id, title, description, date) {
     .then(loadAnnouncements);
 }
 
-function deleteAnnouncement(id) {
+function deleteAnnouncementAPI(id) {
   if (!confirm('Delete this announcement?')) return;
   return fetch('/.netlify/functions/delete-announcement', {
     method: 'DELETE',
@@ -3507,7 +3507,7 @@ function editAnnouncementPrompt(id, title, description, date) {
   if (newDesc === null) return;
   const newDate = prompt("Edit date (YYYY-MM-DD):", date);
   if (newDate === null) return;
-  editAnnouncement(id, newTitle, newDesc, newDate);
+  editAnnouncementAPI(id, newTitle, newDesc, newDate);
 }
 
 // ---------------- TEAM ----------------
@@ -3536,7 +3536,7 @@ async function loadTeam() {
   }
 }
 
-function addTeamMember(name, position, description) {
+function addTeamMemberToAPI(name, position, description) {
   return fetch('/.netlify/functions/add-team-member', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -3546,7 +3546,7 @@ function addTeamMember(name, position, description) {
     .then(loadTeam);
 }
 
-function editTeamMember(id, name, position, description) {
+function editTeamMemberAPI(id, name, position, description) {
   return fetch('/.netlify/functions/edit-team-member', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
@@ -3556,7 +3556,7 @@ function editTeamMember(id, name, position, description) {
     .then(loadTeam);
 }
 
-function deleteTeamMember(id) {
+function deleteTeamMemberAPI(id) {
   if (!confirm('Delete this team member?')) return;
   return fetch('/.netlify/functions/delete-team-member', {
     method: 'DELETE',
@@ -3577,7 +3577,7 @@ function editTeamPrompt(id, name, position, description) {
   if (newPos === null) return;
   const newDesc = prompt("Edit description:", description);
   if (newDesc === null) return;
-  editTeamMember(id, newName, newPos, newDesc);
+  editTeamMemberAPI(id, newName, newPos, newDesc);
 }
 
 // ---------------- DOCUMENTS ----------------
@@ -3606,7 +3606,7 @@ async function loadDocuments() {
   }
 }
 
-function addDocument(title, url) {
+function addDocumentToAPI(title, url) {
   return fetch('/.netlify/functions/add-document', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -3616,7 +3616,7 @@ function addDocument(title, url) {
     .then(loadDocuments);
 }
 
-function editDocument(id, title, url) {
+function editDocumentAPI(id, title, url) {
   return fetch('/.netlify/functions/edit-document', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
@@ -3626,7 +3626,7 @@ function editDocument(id, title, url) {
     .then(loadDocuments);
 }
 
-function deleteDocument(id) {
+function deleteDocumentAPI(id) {
   if (!confirm('Delete this document?')) return;
   return fetch('/.netlify/functions/delete-document', {
     method: 'DELETE',
@@ -3644,7 +3644,7 @@ function editDocumentPrompt(id, title, url) {
   if (newTitle === null) return;
   const newUrl = prompt("Edit URL:", url);
   if (newUrl === null) return;
-  editDocument(id, newTitle, newUrl);
+  editDocumentAPI(id, newTitle, newUrl);
 }
 
 // ---------------- PHOTOS ----------------
@@ -3673,7 +3673,7 @@ async function loadPhotos() {
   }
 }
 
-function addPhoto(title, url) {
+function addPhotoToAPI(title, url) {
   return fetch('/.netlify/functions/add-photo', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -3683,7 +3683,7 @@ function addPhoto(title, url) {
     .then(loadPhotos);
 }
 
-function editPhoto(id, title, url) {
+function editPhotoAPI(id, title, url) {
   return fetch('/.netlify/functions/edit-photo', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
@@ -3693,7 +3693,7 @@ function editPhoto(id, title, url) {
     .then(loadPhotos);
 }
 
-function deletePhoto(id) {
+function deletePhotoAPI(id) {
   if (!confirm('Delete this photo?')) return;
   return fetch('/.netlify/functions/delete-photo', {
     method: 'DELETE',
@@ -3711,7 +3711,7 @@ function editPhotoPrompt(id, title, url) {
   if (newTitle === null) return;
   const newUrl = prompt("Edit URL:", url);
   if (newUrl === null) return;
-  editPhoto(id, newTitle, newUrl);
+  editPhotoAPI(id, newTitle, newUrl);
 }
 
 // ---------------- EVENTS ----------------
@@ -3738,7 +3738,7 @@ function loadEvents() {
     });
 }
 
-function addEvent(title, description, date, startTime, endTime, calendar) {
+function addEventToAPI(title, description, date, startTime, endTime, calendar) {
   return fetch('/.netlify/functions/add-event', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -3748,7 +3748,7 @@ function addEvent(title, description, date, startTime, endTime, calendar) {
     .then(loadEvents);
 }
 
-function editEvent(id, title, description, date, startTime, endTime, calendar) {
+function editEventAPI(id, title, description, date, startTime, endTime, calendar) {
   return fetch('/.netlify/functions/edit-event', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
@@ -3758,7 +3758,7 @@ function editEvent(id, title, description, date, startTime, endTime, calendar) {
     .then(loadEvents);
 }
 
-function deleteEvent(id) {
+function deleteEventAPI(id) {
   if (!confirm('Delete this event?')) return;
   return fetch('/.netlify/functions/delete-event', {
     method: 'DELETE',
@@ -3785,7 +3785,7 @@ function editEventPrompt(id, title, description, date, startTime, endTime, calen
   if (newEnd === null) return;
   const newCal = prompt("Edit calendar:", calendar);
   if (newCal === null) return;
-  editEvent(id, newTitle, newDesc, newDate, newStart, newEnd, newCal);
+  editEventAPI(id, newTitle, newDesc, newDate, newStart, newEnd, newCal);
 }
 
 // ---------------- BENEFITS ----------------
@@ -3812,7 +3812,7 @@ function loadBenefits() {
     });
 }
 
-function addBenefit(title, description, category) {
+function addBenefitToAPI(title, description, category) {
   return fetch('/.netlify/functions/add-benefit', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -3822,7 +3822,7 @@ function addBenefit(title, description, category) {
     .then(loadBenefits);
 }
 
-function editBenefit(id, title, description, category) {
+function editBenefitAPI(id, title, description, category) {
   return fetch('/.netlify/functions/edit-benefit', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
@@ -3832,7 +3832,7 @@ function editBenefit(id, title, description, category) {
     .then(loadBenefits);
 }
 
-function deleteBenefit(id) {
+function deleteBenefitAPI(id) {
   if (!confirm('Delete this benefit?')) return;
   return fetch('/.netlify/functions/delete-benefit', {
     method: 'DELETE',
@@ -3853,7 +3853,7 @@ function editBenefitPrompt(id, title, description, category) {
   if (newDesc === null) return;
   const newCat = prompt("Edit category:", category);
   if (newCat === null) return;
-  editBenefit(id, newTitle, newDesc, newCat);
+  editBenefitAPI(id, newTitle, newDesc, newCat);
 }
 
 // ---------------- INITIAL LOAD ----------------
