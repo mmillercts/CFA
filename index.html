@@ -1999,42 +1999,163 @@
     </div>
 
     <script>
-        // Team member API functions
-        async function getTeamMembers() {
-            try {
-                const response = await fetch('/.netlify/functions/add-team-member');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                console.log('Team members:', data);
-                return data;
-            } catch (error) {
-                console.log('Note: Netlify functions not available in local development. Error:', error.message);
-                return [];
-            }
-        }
+// Generic API request handler for CRUD operations
+async function apiRequest(table, method, data = null, id = null) {
+  try {
+    const url = id ? `/api/${table}/${id}` : `/api/${table}`;
+    const options = {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+    };
+    if (data && method !== 'GET' && method !== 'DELETE') {
+      options.body = JSON.stringify(data);
+    }
+    console.log(`Sending ${method} request to ${url}`, data || '');
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+    }
+    const result = await response.json();
+    console.log(`Response from ${url}:`, result);
+    return result;
+  } catch (error) {
+    console.error(`Error in ${method} ${table}:`, error);
+    alert(`Error: ${error.message}`);
+    throw error;
+  }
+}
 
-        async function addTeamMemberToDatabase(name, role) {
-            try {
-                const response = await fetch('/.netlify/functions/add-team-member', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ name, role }),
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                console.log('Team member added:', data);
-                return data;
-            } catch (error) {
-                console.log('Note: Netlify functions not available in local development. Error:', error.message);
-                return { success: false, error: error.message };
-            }
-        }
+// File upload handler for photos and documents
+async function uploadFile(type, file, metadata) {
+  try {
+    const formData = new FormData();
+    formData.append('type', type);
+    formData.append('file', file);
+    Object.entries(metadata).forEach(([key, value]) => formData.append(key, value));
+    console.log(`Uploading ${type} file`, metadata);
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+    }
+    const result = await response.json();
+    console.log(`Upload ${type} response:`, result);
+    return result;
+  } catch (error) {
+    console.error(`Error uploading ${type}:`, error);
+    alert(`Error uploading ${type}: ${error.message}`);
+    throw error;
+  }
+}
+
+// Fetch and display data for a table
+async function displayList(table, listElementId) {
+  const list = document.getElementById(listElementId);
+  list.innerHTML = '';
+  const data = await apiRequest(table, 'GET');
+  data.forEach(item => {
+    const li = document.createElement('li');
+    li.className = 'flex justify-between items-center mb-2';
+    li.innerHTML = `
+      <span>${JSON.stringify(item, null, 2)}</span>
+      <div>
+        <button class="edit bg-yellow-500 text-white px-2 py-1 rounded mr-2" data-id="${item.id}" data-table="${table}">Edit</button>
+        <button class="delete bg-red-500 text-white px-2 py-1 rounded" data-id="${item.id}" data-table="${table}">Delete</button>
+      </div>
+    `;
+    list.appendChild(li);
+  });
+}
+
+// Form submission handler
+function handleFormSubmit(table, formId, listId, fields, fileField = null) {
+  const form = document.getElementById(formId);
+  const submitButton = document.getElementById(`${table}-submit`);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById(`${table}-id`).value;
+    if (fileField) {
+      const file = document.getElementById(fileField).files[0];
+      const metadata = {};
+      fields.forEach(field => {
+        const value = document.getElementById(`${table}-${field}`).value;
+        if (value) metadata[field] = value;
+      });
+      await uploadFile(table, file, metadata);
+    } else {
+      const data = {};
+      fields.forEach(field => {
+        const value = document.getElementById(`${table}-${field}`).value;
+        if (value) data[field] = value;
+      });
+      if (id) {
+        await apiRequest(table, 'PUT', data, id);
+      } else {
+        await apiRequest(table, 'POST', data);
+      }
+    }
+    form.reset();
+    document.getElementById(`${table}-id`).value = '';
+    submitButton.textContent = `Add ${table.charAt(0).toUpperCase() + table.slice(1)}`;
+    await displayList(table, listId);
+  });
+}
+
+// Edit button handler
+function handleEdit(table, formId, fields) {
+  return async (e) => {
+    const id = e.target.dataset.id;
+    const data = await apiRequest(table, 'GET', null, id);
+    fields.forEach(field => {
+      const input = document.getElementById(`${table}-${field}`);
+      if (input && data[field]) input.value = data[field];
+    });
+    document.getElementById(`${table}-id`).value = id;
+    document.getElementById(`${table}-submit`).textContent = `Update ${table.charAt(0).toUpperCase() + table.slice(1)}`;
+  };
+}
+
+// Delete button handler
+function handleDelete(table, listId) {
+  return async (e) => {
+    const id = e.target.dataset.id;
+    await apiRequest(table, 'DELETE', null, id);
+    await displayList(table, listId);
+  };
+}
+
+// Initialize event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // Define sections and their fields
+  const sections = [
+    { table: 'employees', formId: 'employee-form', listId: 'employee-list', fields: ['name', 'role'] },
+    { table: 'announcements', formId: 'announcement-form', listId: 'announcement-list', fields: ['title', 'content'] },
+    { table: 'events', formId: 'event-form', listId: 'event-list', fields: ['title', 'date', 'description'] },
+    { table: 'photos', formId: 'photo-form', listId: 'photo-list', fields: ['caption'], fileField: 'photo-file' },
+    { table: 'documents', formId: 'document-form', listId: 'document-list', fields: ['title'], fileField: 'document-file' },
+    { table: 'links', formId: 'link-form', listId: 'link-list', fields: ['title', 'url'] },
+    { table: 'cards', formId: 'card-form', listId: 'card-list', fields: ['title', 'content'] },
+    { table: 'users', formId: 'user-form', listId: 'user-list', fields: ['username', 'password', 'role'] },
+  ];
+
+  // Set up each section
+  sections.forEach(({ table, formId, listId, fields, fileField }) => {
+    handleFormSubmit(table, formId, listId, fields, fileField);
+    displayList(table, listId);
+    document.getElementById(listId).addEventListener('click', (e) => {
+      if (e.target.classList.contains('edit')) {
+        handleEdit(table, formId, fields)(e);
+      } else if (e.target.classList.contains('delete')) {
+        handleDelete(table, listId)(e);
+      }
+    });
+  });
+});
+</script>
     
         let currentDeleteElement = null;
         let currentEditElement = null;
@@ -2071,37 +2192,38 @@
         });
 
         // Navigation
-
-        // Add this function anywhere in your <script> tag, before or after showSection
         function goHome() {
             showSection('home');
         }
- // Move these functions to be inside your DOMContentLoaded handler or above the modal HTML
-                function logout() {
-            // Reset portal state
-            document.getElementById('mainPortal').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'flex';
-            userRole = null;
-        
-            // Clear welcome message
-            const userInfo = document.querySelector('.user-info');
-            userInfo.innerHTML = '';
-        
-            // Stop autosave if active
-            stopAutosave();
-        }
-        function openPhotoViewer(imgSrc) {
-            const modal = document.getElementById('photoViewerModal');
-            const img = document.getElementById('photoViewerImg');
-            img.src = imgSrc;
-            modal.classList.add('active');
-        }
-        
-        function closePhotoViewer() {
-            document.getElementById('photoViewerModal').classList.remove('active');
-            document.getElementById('photoViewerImg').src = '';
-        }
-        function showSection(sectionName) {
+
+        // User functions
+        function logout() {
+    // Reset portal state
+    document.getElementById('mainPortal').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    userRole = null;
+
+    // Clear welcome message
+    const userInfo = document.querySelector('.user-info');
+    userInfo.innerHTML = '';
+
+    // Stop autosave if active
+    stopAutosave();
+}
+
+function openPhotoViewer(imgSrc) {
+    const modal = document.getElementById('photoViewerModal');
+    const img = document.getElementById('photoViewerImg');
+    img.src = imgSrc;
+    modal.classList.add('active');
+}
+
+function closePhotoViewer() {
+    document.getElementById('photoViewerModal').classList.remove('active');
+    document.getElementById('photoViewerImg').src = '';
+}
+
+function showSection(sectionName) {
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.remove('active');
             });
@@ -3456,9 +3578,15 @@ async function loadAnnouncements() {
       data.forEach(item => {
         const div = document.createElement('div');
         div.className = 'item';
-        div.innerHTML = `<b>${item.title}</b> (${item.date}): ${item.description}
-          <button onclick="editAnnouncementPrompt(${item.id},'${encodeURIComponent(item.title)}','${encodeURIComponent(item.description)}','${item.date}')">Edit</button>
-          <button onclick="deleteAnnouncement(${item.id})">Delete</button>`;
+        div.innerHTML = '<b>' + item.title + '</b> (' + item.date + '): ' + item.description;
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = function() { editAnnouncementPrompt(item.id, item.title, item.description, item.date); };
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = function() { deleteAnnouncement(item.id); };
+        div.appendChild(editBtn);
+        div.appendChild(deleteBtn);
         container.appendChild(div);
       });
     }
@@ -3525,9 +3653,15 @@ async function loadTeam() {
       data.forEach(member => {
         const div = document.createElement('div');
         div.className = 'item';
-        div.innerHTML = `<b>${member.name}</b> (${member.position}): ${member.description}
-          <button onclick="editTeamPrompt(${member.id},'${encodeURIComponent(member.name)}','${encodeURIComponent(member.position)}','${encodeURIComponent(member.description||"")}')">Edit</button>
-          <button onclick="deleteTeamMember(${member.id})">Delete</button>`;
+        div.innerHTML = '<b>' + member.name + '</b> (' + member.position + '): ' + member.description;
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = function() { editTeamPrompt(member.id, member.name, member.position, member.description || ""); };
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = function() { deleteTeamMember(member.id); };
+        div.appendChild(editBtn);
+        div.appendChild(deleteBtn);
         container.appendChild(div);
       });
     }
@@ -3595,9 +3729,15 @@ async function loadDocuments() {
       data.forEach(doc => {
         const div = document.createElement('div');
         div.className = 'item';
-        div.innerHTML = `<b>${doc.title}</b>: <a href="${doc.url}" target="_blank">View</a>
-          <button onclick="editDocumentPrompt(${doc.id},'${encodeURIComponent(doc.title)}','${encodeURIComponent(doc.url)}')">Edit</button>
-          <button onclick="deleteDocument(${doc.id})">Delete</button>`;
+        div.innerHTML = '<b>' + doc.title + '</b>: <a href="' + doc.url + '" target="_blank">View</a>';
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = function() { editDocumentPrompt(doc.id, doc.title, doc.url); };
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = function() { deleteDocument(doc.id); };
+        div.appendChild(editBtn);
+        div.appendChild(deleteBtn);
         container.appendChild(div);
       });
     }
@@ -3662,9 +3802,15 @@ async function loadPhotos() {
       data.forEach(photo => {
         const div = document.createElement('div');
         div.className = 'item';
-        div.innerHTML = `<b>${photo.title}</b>: <img src="${photo.url}" alt="" style="height:40px;vertical-align:middle;">
-          <button onclick="editPhotoPrompt(${photo.id},'${encodeURIComponent(photo.title)}','${encodeURIComponent(photo.url)}')">Edit</button>
-          <button onclick="deletePhoto(${photo.id})">Delete</button>`;
+        div.innerHTML = '<b>' + photo.title + '</b>: <img src="' + photo.url + '" alt="" style="height:40px;vertical-align:middle;">';
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = function() { editPhotoPrompt(photo.id, photo.title, photo.url); };
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = function() { deletePhoto(photo.id); };
+        div.appendChild(editBtn);
+        div.appendChild(deleteBtn);
         container.appendChild(div);
       });
     }
@@ -3726,9 +3872,15 @@ function loadEvents() {
         data.forEach(event => {
           const div = document.createElement('div');
           div.className = 'item';
-          div.innerHTML = `<b>${event.title}</b> (${event.date}) ${event.startTime||""}-${event.endTime||""} : ${event.description||""}
-            <button onclick="editEventPrompt(${event.id},'${encodeURIComponent(event.title)}','${encodeURIComponent(event.description||"")}','${event.date||""}','${event.startTime||""}','${event.endTime||""}','${encodeURIComponent(event.calendar||"")}')">Edit</button>
-            <button onclick="deleteEvent(${event.id})">Delete</button>`;
+          div.innerHTML = '<b>' + event.title + '</b> (' + event.date + ') ' + (event.startTime || "") + '-' + (event.endTime || "") + ' : ' + (event.description || "");
+          const editBtn = document.createElement('button');
+          editBtn.textContent = 'Edit';
+          editBtn.onclick = function() { editEventPrompt(event.id, event.title, event.description || "", event.date || "", event.startTime || "", event.endTime || "", event.calendar || ""); };
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.onclick = function() { deleteEvent(event.id); };
+          div.appendChild(editBtn);
+          div.appendChild(deleteBtn);
           container.appendChild(div);
         });
       }
@@ -3800,9 +3952,15 @@ function loadBenefits() {
         data.forEach(benefit => {
           const div = document.createElement('div');
           div.className = 'item';
-          div.innerHTML = `<b>${benefit.title}</b> (${benefit.category||""}): ${benefit.description||""}
-            <button onclick="editBenefitPrompt(${benefit.id},'${encodeURIComponent(benefit.title)}','${encodeURIComponent(benefit.description||"")}','${encodeURIComponent(benefit.category||"")}')">Edit</button>
-            <button onclick="deleteBenefit(${benefit.id})">Delete</button>`;
+          div.innerHTML = '<b>' + benefit.title + '</b> (' + (benefit.category || "") + '): ' + (benefit.description || "");
+          const editBtn = document.createElement('button');
+          editBtn.textContent = 'Edit';
+          editBtn.onclick = function() { editBenefitPrompt(benefit.id, benefit.title, benefit.description || "", benefit.category || ""); };
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.onclick = function() { deleteBenefit(benefit.id); };
+          div.appendChild(editBtn);
+          div.appendChild(deleteBtn);
           container.appendChild(div);
         });
       }
