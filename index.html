@@ -1077,21 +1077,21 @@
             </div>
             <form id="loginForm" autocomplete="off">
                 <div style="margin-bottom:18px;">
-                    <label style="font-weight:600;color:#333;">Username</label>
+                    <label for="loginUsername" style="font-weight:600;color:#333;">Username</label>
                     <input type="text" id="loginUsername" class="form-input" style="width:100%;margin-top:6px;" required autocomplete="off">
                 </div>
                 <div style="margin-bottom:18px;">
-                    <label style="font-weight:600;color:#333;">Password</label>
+                    <label for="loginPassword" style="font-weight:600;color:#333;">Password</label>
                     <input type="password" id="loginPassword" class="form-input" style="width:100%;margin-top:6px;" required autocomplete="off">
                 </div>
                 <div id="loginError" style="color:#DD0033;font-size:14px;min-height:18px;margin-bottom:10px;display:none;"></div>
-                <button type="submit" class="btn" style="width:100%;font-size:1.1rem;">Login</button>
+                <button type="submit" class="btn" style="width:100%;font-size:1.1rem;" onclick="handleLoginSubmit(event)">Login</button>
             </form>
         </div>
     </div>
     <!-- filepath: c:\Users\mmill\OneDrive\CFA Website\New7.7.2025\7.7.25.html -->
     <!-- Main Portal -->
-    <div id="mainPortal">
+    <div id="mainPortal" style="display: none;">
         <header class="header">
             <div class="container">
                 <div class="header-content">
@@ -1115,9 +1115,7 @@
                     </nav>
                     
     <div class="user-info">
-        <span class="admin-badge">Admin</span>
-        <span>Welcome, Admin!</span>
-        <button class="btn btn-small btn-outline" onclick="logout()">Log Out</button>
+        <!-- This will be populated by the login process -->
     </div>
                     
                     <button class="mobile-menu" id="mobileMenu">
@@ -1671,11 +1669,11 @@
             </div>
             <form id="editForm">
                 <div class="form-group">
-                    <label class="form-label">Title</label>
+                    <label class="form-label" for="editTitle">Title</label>
                     <input type="text" id="editTitle" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Description</label>
+                    <label class="form-label" for="editDescription">Description</label>
                     <textarea id="editDescription" class="form-textarea" required></textarea>
                 </div>
                 <div class="modal-buttons">
@@ -1695,15 +1693,15 @@
             </div>
             <form id="developmentForm">
                 <div class="form-group">
-                    <label class="form-label">Title</label>
+                    <label class="form-label" for="devTitle">Title</label>
                     <input type="text" id="devTitle" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Description</label>
+                    <label class="form-label" for="devDescription">Description</label>
                     <textarea id="devDescription" class="form-textarea" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Web Links (one per line)</label>
+                    <label class="form-label" for="devLinks">Web Links (one per line)</label>
                     <textarea id="devLinks" class="form-textarea" placeholder="Enter web links, one per line:&#10;https://example.com - Link Title&#10;https://training.site.com - Training Portal"></textarea>
                 </div>
                 <div class="modal-buttons">
@@ -1723,15 +1721,15 @@
             </div>
             <form id="benefitsForm">
                 <div class="form-group">
-                    <label class="form-label">Title</label>
+                    <label class="form-label" for="benefitsTitle">Title</label>
                     <input type="text" id="benefitsTitle" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Description</label>
+                    <label class="form-label" for="benefitsDescription">Description</label>
                     <textarea id="benefitsDescription" class="form-textarea" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Category</label>
+                    <label class="form-label" for="benefitsCategory">Category</label>
                     <select id="benefitsCategory" class="form-select" required>
                         <option value="fulltime">Full-Time</option>
                         <option value="parttime">Part-Time</option>
@@ -1770,19 +1768,19 @@
             </div>
             <form id="teamForm">
                 <div class="form-group">
-                    <label class="form-label">Name</label>
+                    <label class="form-label" for="teamName">Name</label>
                     <input type="text" id="teamName" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Position</label>
+                    <label class="form-label" for="teamPosition">Position</label>
                     <input type="text" id="teamPosition" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Description</label>
+                    <label class="form-label" for="teamDescription">Description</label>
                     <textarea id="teamDescription" class="form-textarea"></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Organization Level</label>
+                    <label class="form-label" for="teamLevel">Organization Level</label>
                     <select id="teamLevel" class="form-select" required>
                         <option value="1">Owner/Operator</option>
                         <option value="2">Executive Director</option>
@@ -1794,7 +1792,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Headshot Photo</label>
+                    <label class="form-label" for="teamPhoto">Headshot Photo</label>
                     <div class="form-file">
                         <input type="file" id="teamPhoto" accept="image/*" onchange="showFilePreview(this, 'teamPhotoPreview', 'teamPhotoText')">
                         <p id="teamPhotoText">Click to select a photo or drag and drop</p>
@@ -1818,11 +1816,11 @@
             </div>
             <form id="documentForm">
                 <div class="form-group">
-                    <label class="form-label">Document Title</label>
+                    <label class="form-label" for="docTitle">Document Title</label>
                     <input type="text" id="docTitle" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Category</label>
+                    <label class="form-label" for="docCategory">Category</label>
                     <select id="docCategory" class="form-select" required>
                         <option value="forms">Forms</option>
                         <option value="policy">Policy</option>
@@ -1831,7 +1829,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Select File</label>
+                    <label class="form-label" for="docFile">Select File</label>
                     <div class="form-file">
                         <input type="file" id="docFile" accept=".pdf,.doc,.docx,.txt" onchange="showFilePreview(this, 'docFilePreview', 'docFileText')">
                         <p id="docFileText">Click to select a file or drag and drop</p>
@@ -1855,15 +1853,15 @@
             </div>
             <form id="photoForm">
                 <div class="form-group">
-                    <label class="form-label">Photo Title</label>
+                    <label class="form-label" for="photoTitle">Photo Title</label>
                     <input type="text" id="photoTitle" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Description</label>
+                    <label class="form-label" for="photoDescription">Description</label>
                     <input type="text" id="photoDescription" class="form-input">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Category</label>
+                    <label class="form-label" for="photoCategory">Category</label>
                     <select id="photoCategory" class="form-select" required>
                         <option value="team-events">Team Events</option>
                         <option value="south-main">South Main</option>
@@ -1871,7 +1869,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Select Photos</label>
+                    <label class="form-label" for="photoFiles">Select Photos</label>
                     <div class="form-file">
                         <input type="file" id="photoFiles" accept="image/*" multiple onchange="showFilePreview(this, 'photoFilesPreview', 'photoFilesText')">
                         <p id="photoFilesText">Click to select photos or drag and drop</p>
@@ -1895,11 +1893,11 @@
             </div>
             <form id="eventForm">
                 <div class="form-group">
-                    <label class="form-label">Event Title</label>
+                    <label class="form-label" for="eventTitle">Event Title</label>
                     <input type="text" id="eventTitle" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Calendar</label>
+                    <label class="form-label" for="eventCalendar">Calendar</label>
                     <select id="eventCalendar" class="form-select" required>
                         <option value="marketing">Marketing Calendar</option>
                         <option value="south-main">South Main</option>
@@ -1907,21 +1905,21 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Date</label>
+                    <label class="form-label" for="eventDate">Date</label>
                     <input type="date" id="eventDate" class="form-input" required>
                 </div>
                 <div class="time-inputs">
                     <div class="form-group">
-                        <label class="form-label">Start Time</label>
+                        <label class="form-label" for="eventStartTime">Start Time</label>
                         <input type="time" id="eventStartTime" class="form-input">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">End Time</label>
+                        <label class="form-label" for="eventEndTime">End Time</label>
                         <input type="time" id="eventEndTime" class="form-input">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Description</label>
+                    <label class="form-label" for="eventDescription">Description</label>
                     <textarea id="eventDescription" class="form-textarea" required></textarea>
                 </div>
                 <div class="modal-buttons">
@@ -1941,15 +1939,15 @@
             </div>
             <form id="quickForm">
                 <div class="form-group">
-                    <label class="form-label">Icon (Emoji)</label>
+                    <label class="form-label" for="quickIcon">Icon (Emoji)</label>
                     <input type="text" id="quickIcon" class="form-input" placeholder="🏠" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Label</label>
+                    <label class="form-label" for="quickLabel">Label</label>
                     <input type="text" id="quickLabel" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Link To Section</label>
+                    <label class="form-label" for="quickSection">Link To Section</label>
                     <select id="quickSection" class="form-select" required>
                         <option value="">Select Section</option>
                         <option value="home">Home</option>
@@ -1979,15 +1977,15 @@
             </div>
             <form id="announcementForm">
                 <div class="form-group">
-                    <label class="form-label">Date</label>
+                    <label class="form-label" for="announcementDate">Date</label>
                     <input type="date" id="announcementDate" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Title</label>
+                    <label class="form-label" for="announcementTitle">Title</label>
                     <input type="text" id="announcementTitle" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Description</label>
+                    <label class="form-label" for="announcementDescription">Description</label>
                     <textarea id="announcementDescription" class="form-textarea" required></textarea>
                 </div>
                 <div class="modal-buttons">
@@ -1999,6 +1997,97 @@
     </div>
 
     <script>
+// User role variable
+let userRole = null; // "admin" or "team"
+
+// Handle login form submission (onclick fallback)
+function handleLoginSubmit(event) {
+    console.log('handleLoginSubmit called!');
+    
+    if (event) {
+        event.preventDefault();
+    }
+    
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    
+    console.log('Form submission values:', { username, password });
+    
+    if (!username || !password) {
+        alert('Please enter both username and password');
+        return false;
+    }
+    
+    // Use the same login logic as the event listener
+    let valid = false;
+    
+    if (username.toLowerCase() === 'kvillecfa' && (password === '1248' || password === '4772')) {
+        userRole = 'team';
+        valid = true;
+    } else if (username.toLowerCase() === 'admin' && password === 'Asdf2025!') {
+        userRole = 'admin';
+        valid = true;
+    }
+    
+    if (valid) {
+        console.log('Login valid, showing portal for role:', userRole);
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainPortal').style.display = '';
+        
+        const userInfo = document.querySelector('.user-info');
+        if (userRole === 'admin') {
+            userInfo.innerHTML = `<span class="admin-badge">Admin</span><span>Welcome, Admin!</span>`;
+        } else {
+            userInfo.innerHTML = `<span>Welcome, Team Member!</span>`;
+        }
+        setReadonlyMode(userRole === 'team');
+    } else {
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.textContent = 'Invalid username or password.';
+        errorDiv.style.display = 'block';
+    }
+    
+    return false; // Prevent form submission
+}
+
+// Logout function
+function logout() {
+    // Reset portal state
+    document.getElementById('mainPortal').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    userRole = null;
+
+    // Clear welcome message
+    const userInfo = document.querySelector('.user-info');
+    userInfo.innerHTML = '';
+
+    // Stop autosave if active
+    try {
+        stopAutosave();
+    } catch (error) {
+        console.log('Autosave stop failed:', error);
+    }
+}
+
+// SetReadonly mode function
+function setReadonlyMode(isReadonly) {
+    // Hide admin controls if readonly
+    document.querySelectorAll('.admin-controls').forEach(el => {
+        el.style.display = isReadonly ? 'none' : '';
+    });
+    // Hide admin badge if readonly
+    const adminBadge = document.querySelector('.admin-badge');
+    if (adminBadge) adminBadge.style.display = isReadonly ? 'none' : '';
+    // Hide admin buttons
+    document.querySelectorAll('.admin-btn').forEach(btn => {
+        btn.style.display = isReadonly ? 'none' : '';
+    });
+    // Hide all admin-only add/upload buttons
+    document.querySelectorAll('.admin-only').forEach(btn => {
+        btn.style.display = isReadonly ? 'none' : '';
+    });
+}
+
 // Generic API request handler for CRUD operations
 async function apiRequest(table, method, data = null, id = null) {
   try {
@@ -2055,6 +2144,13 @@ async function uploadFile(type, file, metadata) {
 // Fetch and display data for a table
 async function displayList(table, listElementId) {
   const list = document.getElementById(listElementId);
+  
+  // Check if list element exists
+  if (!list) {
+    console.log(`List element with id '${listElementId}' not found, skipping display`);
+    return;
+  }
+  
   list.innerHTML = '';
   const data = await apiRequest(table, 'GET');
   data.forEach(item => {
@@ -2075,6 +2171,13 @@ async function displayList(table, listElementId) {
 function handleFormSubmit(table, formId, listId, fields, fileField = null) {
   const form = document.getElementById(formId);
   const submitButton = document.getElementById(`${table}-submit`);
+  
+  // Check if form exists before adding event listener
+  if (!form) {
+    console.log(`Form with id '${formId}' not found, skipping event listener setup`);
+    return;
+  }
+  
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById(`${table}-id`).value;
@@ -2130,29 +2233,37 @@ function handleDelete(table, listId) {
 
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', () => {
-  // Define sections and their fields
+  // Define sections and their fields - only include actual forms that exist in HTML
   const sections = [
-    { table: 'employees', formId: 'employee-form', listId: 'employee-list', fields: ['name', 'role'] },
-    { table: 'announcements', formId: 'announcement-form', listId: 'announcement-list', fields: ['title', 'content'] },
-    { table: 'events', formId: 'event-form', listId: 'event-list', fields: ['title', 'date', 'description'] },
-    { table: 'photos', formId: 'photo-form', listId: 'photo-list', fields: ['caption'], fileField: 'photo-file' },
-    { table: 'documents', formId: 'document-form', listId: 'document-list', fields: ['title'], fileField: 'document-file' },
-    { table: 'links', formId: 'link-form', listId: 'link-list', fields: ['title', 'url'] },
-    { table: 'cards', formId: 'card-form', listId: 'card-list', fields: ['title', 'content'] },
-    { table: 'users', formId: 'user-form', listId: 'user-list', fields: ['username', 'password', 'role'] },
+    // These forms don't exist in the HTML, so we'll skip them to avoid errors
+    // { table: 'employees', formId: 'employee-form', listId: 'employee-list', fields: ['name', 'role'] },
+    // { table: 'announcements', formId: 'announcement-form', listId: 'announcement-list', fields: ['title', 'content'] },
+    // { table: 'events', formId: 'event-form', listId: 'event-list', fields: ['title', 'date', 'description'] },
+    // { table: 'photos', formId: 'photo-form', listId: 'photo-list', fields: ['caption'], fileField: 'photo-file' },
+    // { table: 'documents', formId: 'document-form', listId: 'document-list', fields: ['title'], fileField: 'document-file' },
+    // { table: 'links', formId: 'link-form', listId: 'link-list', fields: ['title', 'url'] },
+    // { table: 'cards', formId: 'card-form', listId: 'card-list', fields: ['title', 'content'] },
+    // { table: 'users', formId: 'user-form', listId: 'user-list', fields: ['username', 'password', 'role'] },
   ];
 
   // Set up each section
   sections.forEach(({ table, formId, listId, fields, fileField }) => {
     handleFormSubmit(table, formId, listId, fields, fileField);
     displayList(table, listId);
-    document.getElementById(listId).addEventListener('click', (e) => {
-      if (e.target.classList.contains('edit')) {
-        handleEdit(table, formId, fields)(e);
-      } else if (e.target.classList.contains('delete')) {
-        handleDelete(table, listId)(e);
-      }
-    });
+    
+    // Check if list element exists before adding event listener
+    const listElement = document.getElementById(listId);
+    if (listElement) {
+      listElement.addEventListener('click', (e) => {
+        if (e.target.classList.contains('edit')) {
+          handleEdit(table, formId, fields)(e);
+        } else if (e.target.classList.contains('delete')) {
+          handleDelete(table, listId)(e);
+        }
+      });
+    } else {
+      console.log(`List element with id '${listId}' not found, skipping click event setup`);
+    }
   });
 });
 </script>
@@ -2197,21 +2308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // User functions
-        function logout() {
-    // Reset portal state
-    document.getElementById('mainPortal').style.display = 'none';
-    document.getElementById('loginScreen').style.display = 'flex';
-    userRole = null;
-
-    // Clear welcome message
-    const userInfo = document.querySelector('.user-info');
-    userInfo.innerHTML = '';
-
-    // Stop autosave if active
-    stopAutosave();
-}
-
-function openPhotoViewer(imgSrc) {
+        function openPhotoViewer(imgSrc) {
     const modal = document.getElementById('photoViewerModal');
     const img = document.getElementById('photoViewerImg');
     img.src = imgSrc;
@@ -2287,9 +2384,8 @@ function showSection(sectionName) {
             }
         }
 
-        // Document Functions - FIXED WITH PROPER ONCLICK HANDLERS
+        // Document Functions
         function viewDocument(docId) {
-            console.log('Viewing document:', docId); // Debug log
             // Create a new window to display document content
             const newWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes');
             newWindow.document.write(`
@@ -2828,15 +2924,6 @@ function showSection(sectionName) {
             openModal('deleteModal');
         }
 
-        // Other Functions
-        function startTraining(course) {
-            // Training functionality would go here
-        }
-
-        function viewPhoto(photo) {
-            // Photo viewing functionality would go here
-        }
-
         // Form Submissions
         document.addEventListener('DOMContentLoaded', function() {
                  // ...existing code...
@@ -3016,87 +3103,11 @@ function showSection(sectionName) {
                 return events;
             }
             
-            // Start autosave when admin logs in
-            document.getElementById('loginForm').addEventListener('submit', function(e) {
-                if (userRole === 'admin') {
-                    startAutosave();
-                }
-            });
-            
             // Stop autosave when leaving the portal
             window.addEventListener('beforeunload', function() {
                 stopAutosave();
             });
-let userRole = null; // "admin" or "team"
-function setReadonlyMode(isReadonly) {
-    // Hide admin controls if readonly
-    document.querySelectorAll('.admin-controls').forEach(el => {
-        el.style.display = isReadonly ? 'none' : '';
-    });
-    // Hide admin badge if readonly
-    const adminBadge = document.querySelector('.admin-badge');
-    if (adminBadge) adminBadge.style.display = isReadonly ? 'none' : '';
-    // Hide admin buttons
-    document.querySelectorAll('.admin-btn').forEach(btn => {
-        btn.style.display = isReadonly ? 'none' : '';
-    });
-    // Hide all admin-only add/upload buttons
-    document.querySelectorAll('.admin-only').forEach(btn => {
-        btn.style.display = isReadonly ? 'none' : '';
-    });
-}
-
-
-document.getElementById('mainPortal').style.display = 'none';
-
-document.getElementById('loginForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-    const errorDiv = document.getElementById('loginError');
-    let valid = false;
-
-    // Fetch IP address
-    const ipAddress = await fetchIPAddress();
-
-    // Team Member
-    if (
-        username.toLowerCase() === 'kvillecfa' &&
-        (password === '1248' || password === '4772')
-    ) {
-        userRole = 'team';
-        valid = true;
-    }
-    // Admin
-    if (
-        username.toLowerCase() === 'admin' &&
-        password === 'Asdf2025!'
-    ) {
-        userRole = 'admin';
-        valid = true;
-    }
-   if (valid) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('mainPortal').style.display = '';
-
-    // Set welcome message based on role
-    const userInfo = document.querySelector('.user-info');
-    if (userRole === 'admin') {
-        userInfo.innerHTML = `
-            <span class="admin-badge">Admin</span>
-            <span>Welcome, Admin!</span>
-        `;
-    } else {
-        userInfo.innerHTML = `
-            <span>Welcome, Team Member!</span>
-        `;
-    }
-    setReadonlyMode(userRole === 'team');
-} else {
-    errorDiv.textContent = 'Invalid username or password.';
-    errorDiv.style.display = 'block';
-}
-});
+        });
 
 // Function to fetch IP address
 async function fetchIPAddress() {
@@ -3110,69 +3121,8 @@ async function fetchIPAddress() {
     }
 }
 
-
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-    const errorDiv = document.getElementById('loginError');
-    let valid = false;
-
-    // Team Member
-    if (
-        username.toLowerCase() === 'kvillecfa' &&
-        (password === '1248' || password === '4772')
-    ) {
-        userRole = 'team';
-        valid = true;
-    }
-    // Admin
-    if (
-        username.toLowerCase() === 'admin' &&
-        password === 'Asdf2025!'
-    ) {
-        userRole = 'admin';
-        valid = true;
-    }
-
-    if (valid) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('mainPortal').style.display = '';
-
-        // Set welcome message based on role
-        const userInfo = document.querySelector('.user-info');
-        if (userRole === 'admin') {
-            userInfo.innerHTML = `
-                <span class="admin-badge">Admin</span>
-                <span>Welcome, Admin!</span>
-            `;
-        } else {
-            userInfo.innerHTML = `
-                <span>Welcome, Team Member!</span>
-            `;
-        }
-
-        setReadonlyMode(userRole === 'team');
-    } else {
-        errorDiv.textContent = 'Invalid username or password.';
-        errorDiv.style.display = 'block';
-    }
-});
-
 // Prevent admin controls from showing if user is not admin (on page load)
 setReadonlyMode(true);
-// Full Screen Photo Viewer Functions
-function openPhotoViewer(imgSrc) {
-    const modal = document.getElementById('photoViewerModal');
-    const img = document.getElementById('photoViewerImg');
-    img.src = imgSrc;
-    modal.classList.add('active');
-}
-
-function closePhotoViewer() {
-    document.getElementById('photoViewerModal').classList.remove('active');
-    document.getElementById('photoViewerImg').src = '';
-}
 
 // Close on overlay click
 document.getElementById('photoViewerModal').addEventListener('click', function(e) {
@@ -3253,7 +3203,11 @@ document.addEventListener('click', function(e) {
                     if (photoFile && avatar) {
                         const reader = new FileReader();
                         reader.onload = function(e) {
-                            avatar.innerHTML = `<img src="${e.target.result}" alt="${name}">`;
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = name;
+                            avatar.innerHTML = '';
+                            avatar.appendChild(img);
                         };
                         reader.readAsDataURL(photoFile);
                     }
@@ -3264,8 +3218,12 @@ document.addEventListener('click', function(e) {
                         targetGrid.appendChild(currentEditElement);
                     }
                 } else {
-                    // Add new team member to database
-                    const result = await addTeamMemberToDatabase(name, position);
+                    // Add new team member
+                    try {
+                        await addTeamMemberToAPI(name, position, description);
+                    } catch (error) {
+                        console.log('Team member API not available in local development:', error);
+                    }
                     
                     // Add to UI regardless of database result (for local development)
                     const targetGrid = document.querySelector(`[data-level="${level}"] .team-grid`);
@@ -3275,9 +3233,13 @@ document.addEventListener('click', function(e) {
                     newMember.setAttribute('data-id', 'team-' + Date.now());
                     newMember.setAttribute('ondragstart', 'drag(event)');
                     
-                    const avatarContent = photoFile ? 
-                        `<img src="${URL.createObjectURL(photoFile)}" alt="${name}">` : 
-                        name.substring(0, 2).toUpperCase();
+                    let avatarContent = name.substring(0, 2).toUpperCase();
+                    if (photoFile) {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(photoFile);
+                        img.alt = name;
+                        avatarContent = img.outerHTML;
+                    }
                     
                     newMember.innerHTML = `
                         <div class="admin-controls">
@@ -3369,13 +3331,19 @@ document.addEventListener('click', function(e) {
                                 <button onclick="editPhoto(this, 'new')">Edit</button>
                                 <button onclick="deletePhoto(this, 'new')">Delete</button>
                             </div>
-                            <div class="photo-placeholder" style="background-image: url('${photoUrl}'); background-size: cover; background-position: center;">
+                            <div class="photo-placeholder">
                             </div>
                             <div class="photo-caption">
                                 <h4>${title}</h4>
                                 <p>${description}</p>
                             </div>
                         `;
+                        
+                        // Set the background image separately to avoid template literal issues
+                        const photoPlaceholder = newPhoto.querySelector('.photo-placeholder');
+                        photoPlaceholder.style.backgroundImage = `url('${photoUrl}')`;
+                        photoPlaceholder.style.backgroundSize = 'cover';
+                        photoPlaceholder.style.backgroundPosition = 'center';
                         photosList.appendChild(newPhoto);
                     });
                 }
@@ -3802,7 +3770,24 @@ async function loadPhotos() {
       data.forEach(photo => {
         const div = document.createElement('div');
         div.className = 'item';
-        div.innerHTML = '<b>' + photo.title + '</b>: <img src="' + photo.url + '" alt="" style="height:40px;vertical-align:middle;">';
+        
+        // Create safe img element with fallback
+        const img = document.createElement('img');
+        img.src = photo.url || '#';
+        img.alt = photo.title || 'Photo';
+        img.style.height = '40px';
+        img.style.verticalAlign = 'middle';
+        img.onerror = function() {
+          this.style.display = 'none';
+        };
+        
+        const titleSpan = document.createElement('b');
+        titleSpan.textContent = photo.title || 'Untitled Photo';
+        
+        div.appendChild(titleSpan);
+        div.appendChild(document.createTextNode(': '));
+        div.appendChild(img);
+        
         const editBtn = document.createElement('button');
         editBtn.textContent = 'Edit';
         editBtn.onclick = function() { editPhotoPrompt(photo.id, photo.title, photo.url); };
@@ -4017,16 +4002,129 @@ function editBenefitPrompt(id, title, description, category) {
 // ---------------- INITIAL LOAD ----------------
 
 window.addEventListener('DOMContentLoaded', () => {
+  console.log('DOM Content Loaded!'); // Debug log
+  
+  // Add global error handler
+  window.addEventListener('error', function(e) {
+    console.error('JavaScript Error:', e.error);
+    console.error('Error message:', e.message);
+    console.error('Error line:', e.lineno);
+    console.error('Error column:', e.colno);
+    console.error('Error filename:', e.filename);
+  });
+  
+  // Add unhandled promise rejection handler
+  window.addEventListener('unhandledrejection', function(e) {
+    console.error('Unhandled Promise Rejection:', e.reason);
+  });
+  
+  // Ensure login screen is shown on page load
+  const loginScreen = document.getElementById('loginScreen');
+  const mainPortal = document.getElementById('mainPortal');
+  
+  if (loginScreen) {
+    loginScreen.style.display = 'flex';
+  }
+  
+  if (mainPortal) {
+    mainPortal.style.display = 'none';
+  }
+  
   // Only load API data if we're in a production environment with Netlify functions
   // These will fail gracefully in local development
   console.log('Loading application data...');
   
-  loadAnnouncements();
-  loadTeam();
-  loadDocuments();
-  loadPhotos();
-  loadEvents();
-  loadBenefits();
+  // Load data with proper error handling for local development
+  try {
+    loadAnnouncements().catch(err => console.log('Announcements API not available:', err.message));
+    loadTeam().catch(err => console.log('Team API not available:', err.message));
+    loadDocuments().catch(err => console.log('Documents API not available:', err.message));
+    loadPhotos().catch(err => console.log('Photos API not available:', err.message));
+    loadEvents().catch(err => console.log('Events API not available:', err.message));
+    loadBenefits().catch(err => console.log('Benefits API not available:', err.message));
+  } catch (error) {
+    console.log('Error loading initial data:', error.message);
+  }
+  
+  // Setup login form event listener
+  const loginForm = document.getElementById('loginForm');
+  
+  if (loginForm) {
+    
+    // Add the event listener
+    loginForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      console.log('Login form submitted!'); // Debug log
+      
+      // Additional debug - check if elements exist
+      const usernameInput = document.getElementById('loginUsername');
+      const passwordInput = document.getElementById('loginPassword');
+      console.log('Username input:', usernameInput);
+      console.log('Password input:', passwordInput);
+      
+      if (!usernameInput || !passwordInput) {
+        console.error('Login inputs not found!');
+        return;
+      }
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const errorDiv = document.getElementById('loginError');
+      let valid = false;
+      
+      // Clear any previous errors
+      errorDiv.style.display = 'none';
+      errorDiv.textContent = '';
+
+      // Team Member
+      if (
+        username.toLowerCase() === 'kvillecfa' &&
+        (password === '1248' || password === '4772')
+      ) {
+        userRole = 'team';
+        valid = true;
+      }
+      // Admin
+      if (
+        username.toLowerCase() === 'admin' &&
+        password === 'Asdf2025!'
+      ) {
+        userRole = 'admin';
+        valid = true;
+      }
+      if (valid) {
+        console.log('Login successful for role:', userRole);
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainPortal').style.display = '';
+
+        // Set welcome message based on role
+        const userInfo = document.querySelector('.user-info');
+        if (userRole === 'admin') {
+          userInfo.innerHTML = `
+            <span class="admin-badge">Admin</span>
+            <span>Welcome, Admin!</span>
+          `;
+          // Start autosave for admin users
+          try {
+            startAutosave();
+          } catch (error) {
+            console.log('Autosave failed to start:', error);
+          }
+        } else {
+          userInfo.innerHTML = `
+            <span>Welcome, Team Member!</span>
+          `;
+        }
+        setReadonlyMode(userRole === 'team');
+      } else {
+        console.log('Login failed - invalid credentials');
+        errorDiv.textContent = 'Invalid username or password.';
+        errorDiv.style.display = 'block';
+      }
+    });
+    
+  } else {
+    console.error('Login form not found!');
+  }
 });
     </script>
         <!-- Add this just before the closing </body> tag -->
