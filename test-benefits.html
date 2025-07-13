@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Benefits Test</title>
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .form-textarea {
+            height: 100px;
+        }
+        
+        .modal-buttons {
+            margin-top: 20px;
+            text-align: right;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-cancel {
+            background: #ccc;
+        }
+        
+        .btn:not(.btn-cancel) {
+            background: #DD0033;
+            color: white;
+        }
+        
+        .benefits-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .admin-controls {
+            margin-bottom: 10px;
+        }
+        
+        .admin-controls button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            background: #007cba;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Benefits Test</h1>
+    
+    <button onclick="addBenefitsItem('fulltime')">Add Full-Time Benefit</button>
+    <button onclick="addBenefitsItem('parttime')">Add Part-Time Benefit</button>
+    <button onclick="addBenefitsItem('manager')">Add Manager Benefit</button>
+    
+    <div id="fulltimeBenefits">
+        <h3>Full-Time Benefits</h3>
+        <div class="benefits-item" data-id="test">
+            <div class="admin-controls">
+                <button onclick="editBenefitsItem(this, 'test')">Edit</button>
+                <button onclick="deleteBenefitsItem(this)">Delete</button>
+            </div>
+            <h4>Test Benefit</h4>
+            <p>Test description</p>
+        </div>
+    </div>
+    
+    <div id="parttimeBenefits">
+        <h3>Part-Time Benefits</h3>
+    </div>
+    
+    <div id="managerBenefits">
+        <h3>Manager Benefits</h3>
+    </div>
+    
+    <!-- Benefits Modal -->
+    <div id="benefitsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Benefits Item</h3>
+                <button style="float: right;" onclick="closeModal('benefitsModal')">×</button>
+            </div>
+            <form id="benefitsForm">
+                <div class="form-group">
+                    <label class="form-label" for="benefitsTitle">Title</label>
+                    <input type="text" id="benefitsTitle" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="benefitsDescription">Description</label>
+                    <textarea id="benefitsDescription" class="form-textarea" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="benefitsCategory">Category</label>
+                    <select id="benefitsCategory" class="form-select" required>
+                        <option value="fulltime">Full-Time</option>
+                        <option value="parttime">Part-Time</option>
+                        <option value="manager">Manager</option>
+                    </select>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal('benefitsModal')">Cancel</button>
+                    <button type="submit" class="btn">Save Benefits Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let isEditMode = false;
+        let currentEditElement = null;
+        
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            isEditMode = false;
+            currentEditElement = null;
+        }
+        
+        function addBenefitsItem(category) {
+            openModal('benefitsModal');
+            document.getElementById('benefitsTitle').value = '';
+            document.getElementById('benefitsDescription').value = '';
+            document.getElementById('benefitsCategory').value = category;
+            isEditMode = false;
+        }
+        
+        function editBenefitsItem(button, id) {
+            isEditMode = true;
+            currentEditElement = button.closest('.benefits-item');
+            const item = currentEditElement;
+            const title = item.querySelector('h4').textContent;
+            const description = item.querySelector('p').textContent;
+            const category = item.closest('[id$="Benefits"]').id.replace('Benefits', '').toLowerCase();
+            
+            document.getElementById('benefitsTitle').value = title;
+            document.getElementById('benefitsDescription').value = description;
+            document.getElementById('benefitsCategory').value = category;
+            
+            openModal('benefitsModal');
+        }
+        
+        function deleteBenefitsItem(button) {
+            if (confirm('Delete this benefit?')) {
+                button.closest('.benefits-item').remove();
+            }
+        }
+        
+        // Benefits form submit handler
+        const benefitsForm = document.getElementById('benefitsForm');
+        if (benefitsForm) {
+            benefitsForm.addEventListener('submit', function(e) {
+                console.log('=== BENEFITS FORM SUBMIT EVENT TRIGGERED ===');
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                try {
+                    console.log('Getting form values...');
+                    const title = document.getElementById('benefitsTitle').value;
+                    const description = document.getElementById('benefitsDescription').value;
+                    const category = document.getElementById('benefitsCategory').value;
+                    
+                    console.log('Form values:', { title, description, category, isEditMode, currentEditElement });
+                    
+                    if (!title.trim() || !description.trim() || !category) {
+                        alert('Please fill in all fields');
+                        return false;
+                    }
+                    
+                    if (isEditMode && currentEditElement) {
+                        // Edit existing benefits item
+                        console.log('Editing existing benefits item:', currentEditElement);
+                        const h4 = currentEditElement.querySelector('h4');
+                        const p = currentEditElement.querySelector('p');
+                        if (h4) h4.textContent = title;
+                        if (p) p.textContent = description;
+                        
+                        // Move to different category if needed
+                        const currentCategory = currentEditElement.closest('[id$="Benefits"]').id.replace('Benefits', '').toLowerCase();
+                        if (currentCategory !== category) {
+                            // Remove from current category
+                            currentEditElement.remove();
+                            
+                            // Add to new category
+                            let targetContainerId = category + 'Benefits';
+                            const benefitsContainer = document.getElementById(targetContainerId);
+                            if (benefitsContainer) {
+                                benefitsContainer.appendChild(currentEditElement);
+                            }
+                        }
+                    } else {
+                        // Create new benefits item
+                        let targetContainerId = category + 'Benefits';
+                        
+                        const benefitsContainer = document.getElementById(targetContainerId);
+                        if (benefitsContainer) {
+                            const newBenefit = document.createElement('div');
+                            newBenefit.className = 'benefits-item';
+                            newBenefit.setAttribute('data-id', 'benefit-' + Date.now());
+                            newBenefit.innerHTML = `
+                                <div class="admin-controls">
+                                    <button onclick="editBenefitsItem(this, 'benefit')">Edit</button>
+                                    <button onclick="deleteBenefitsItem(this)">Delete</button>
+                                </div>
+                                <h4>${title}</h4>
+                                <p>${description}</p>
+                            `;
+                            benefitsContainer.appendChild(newBenefit);
+                        } else {
+                            console.error('Benefits container not found:', targetContainerId);
+                            alert('Error: Could not find benefits container for category: ' + category);
+                            return false;
+                        }
+                    }
+                    
+                    // Reset the form and close modal
+                    document.getElementById('benefitsForm').reset();
+                    isEditMode = false;
+                    currentEditElement = null;
+                    closeModal('benefitsModal');
+                    console.log('Benefits form completed successfully');
+                    
+                } catch (error) {
+                    console.error('Error saving benefits item:', error);
+                    alert('Error saving benefits item: ' + error.message);
+                }
+                
+                return false;
+            });
+        }
+    </script>
+</body>
+</html>

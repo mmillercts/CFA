@@ -3129,6 +3129,429 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Add development form submit handler
+  const developmentForm = document.getElementById('developmentForm');
+  if (developmentForm) {
+    developmentForm.addEventListener('submit', function(e) {
+      console.log('=== DEVELOPMENT FORM SUBMIT EVENT TRIGGERED ===');
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      try {
+        const title = document.getElementById('devTitle').value;
+        const description = document.getElementById('devDescription').value;
+        const links = document.getElementById('devLinks').value;
+        
+        if (!title.trim() || !description.trim()) {
+          alert('Please fill in title and description');
+          return false;
+        }
+        
+        // Create new development content
+        const devSection = document.getElementById('developmentSection');
+        const cardsContainer = devSection.querySelector('.cards');
+        if (cardsContainer) {
+          const newCard = document.createElement('div');
+          newCard.className = 'card';
+          newCard.setAttribute('data-id', 'dev-' + Date.now());
+          
+          let linksHtml = '';
+          if (links.trim()) {
+            const linkLines = links.split('\n').filter(line => line.trim());
+            linkLines.forEach(line => {
+              const [url, ...titleParts] = line.split(' - ');
+              const linkTitle = titleParts.join(' - ') || url;
+              linksHtml += `<a href="${url.trim()}" target="_blank">${linkTitle}</a><br>`;
+            });
+          }
+          
+          newCard.innerHTML = `
+            <div class="admin-controls">
+              <button onclick="editDevelopment(this, 'development')">Edit</button>
+              <button onclick="deleteDevelopment(this, 'development')">Delete</button>
+            </div>
+            <div class="card-body">
+              <h3>${title}</h3>
+              <p>${description}</p>
+              ${linksHtml ? `<div class="dev-links">${linksHtml}</div>` : ''}
+            </div>
+          `;
+          cardsContainer.appendChild(newCard);
+        }
+        
+        closeModal('developmentModal');
+        console.log('Development form completed successfully');
+      } catch (error) {
+        console.error('Error saving development content:', error);
+        alert('Error saving development content. Please try again.');
+      }
+      
+      return false;
+    });
+  }
+
+  // Add benefits form submit handler
+  const benefitsForm = document.getElementById('benefitsForm');
+  if (benefitsForm) {
+    benefitsForm.addEventListener('submit', function(e) {
+      console.log('=== BENEFITS FORM SUBMIT EVENT TRIGGERED ===');
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      try {
+        console.log('Getting form values...');
+        
+        const titleEl = document.getElementById('benefitsTitle');
+        const descriptionEl = document.getElementById('benefitsDescription');
+        const categoryEl = document.getElementById('benefitsCategory');
+        
+        if (!titleEl) {
+          throw new Error('benefitsTitle element not found');
+        }
+        if (!descriptionEl) {
+          throw new Error('benefitsDescription element not found');
+        }
+        if (!categoryEl) {
+          throw new Error('benefitsCategory element not found');
+        }
+        
+        const title = titleEl.value;
+        const description = descriptionEl.value;
+        const category = categoryEl.value;
+        
+        console.log('Form values:', { title, description, category, isEditMode, currentEditElement });
+        
+        if (!title.trim() || !description.trim() || !category) {
+          alert('Please fill in all fields');
+          return false;
+        }
+        
+        if (isEditMode && currentEditElement) {
+          // Edit existing benefits item
+          console.log('Editing existing benefits item:', currentEditElement);
+          const h4 = currentEditElement.querySelector('h4');
+          const p = currentEditElement.querySelector('p');
+          if (h4) h4.textContent = title;
+          if (p) p.textContent = description;
+          
+          // Move to different category if needed
+          const currentCategory = currentEditElement.closest('.benefits-category').dataset.category;
+          if (currentCategory !== category) {
+            // Remove from current category
+            currentEditElement.remove();
+            
+            // Add to new category
+            let targetContainerId = '';
+            switch(category) {
+              case 'fulltime': targetContainerId = 'fulltimeBenefits'; break;
+              case 'parttime': targetContainerId = 'parttimeBenefits'; break;
+              case 'manager': targetContainerId = 'managerBenefits'; break;
+            }
+            
+            const benefitsContainer = document.getElementById(targetContainerId);
+            if (benefitsContainer) {
+              const addButton = benefitsContainer.querySelector('button.btn-small');
+              if (addButton) {
+                benefitsContainer.insertBefore(currentEditElement, addButton);
+              } else {
+                benefitsContainer.appendChild(currentEditElement);
+              }
+            }
+          }
+        } else {
+          // Create new benefits item
+          let targetContainerId = '';
+          switch(category) {
+            case 'fulltime': targetContainerId = 'fulltimeBenefits'; break;
+            case 'parttime': targetContainerId = 'parttimeBenefits'; break;
+            case 'manager': targetContainerId = 'managerBenefits'; break;
+          }
+          
+          const benefitsContainer = document.getElementById(targetContainerId);
+          if (benefitsContainer) {
+            const newBenefit = document.createElement('div');
+            newBenefit.className = 'benefits-item';
+            newBenefit.setAttribute('data-id', 'benefit-' + Date.now());
+            newBenefit.innerHTML = `
+              <div class="admin-controls">
+                <button onclick="editBenefitsItem(this, 'benefit')">Edit</button>
+                <button onclick="deleteBenefitsItem(this)">Delete</button>
+              </div>
+              <h4>${title}</h4>
+              <p>${description}</p>
+            `;
+            
+            // Insert before the "Add Benefit" button if it exists
+            const addButton = benefitsContainer.querySelector('button.btn-small');
+            if (addButton) {
+              benefitsContainer.insertBefore(newBenefit, addButton);
+            } else {
+              benefitsContainer.appendChild(newBenefit);
+            }
+          } else {
+            console.error('Benefits container not found:', targetContainerId);
+            alert('Error: Could not find benefits container for category: ' + category);
+          }
+        }
+        
+        // Reset the form and close modal
+        document.getElementById('benefitsForm').reset();
+        isEditMode = false;
+        currentEditElement = null;
+        closeModal('benefitsModal');
+        console.log('Benefits form completed successfully');
+      } catch (error) {
+        console.error('Error saving benefits item:', error);
+        alert('Error saving benefits item: ' + error.message);
+      }
+      
+      return false;
+    });
+  }
+
+  // Add quick form submit handler
+  const quickForm = document.getElementById('quickForm');
+  if (quickForm) {
+    quickForm.addEventListener('submit', function(e) {
+      console.log('=== QUICK FORM SUBMIT EVENT TRIGGERED ===');
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      try {
+        const icon = document.getElementById('quickIcon').value;
+        const label = document.getElementById('quickLabel').value;
+        const section = document.getElementById('quickSection').value;
+        
+        if (!icon.trim() || !label.trim() || !section) {
+          alert('Please fill in all fields');
+          return false;
+        }
+        
+        // Create new quick access item
+        const quickGrid = document.getElementById('quickGrid');
+        if (quickGrid) {
+          const newQuickItem = document.createElement('div');
+          newQuickItem.className = 'quick-item';
+          newQuickItem.setAttribute('data-id', section);
+          newQuickItem.setAttribute('onclick', `showSection('${section}')`);
+          newQuickItem.innerHTML = `
+            <div class="admin-controls">
+              <button onclick="editQuickItem(this, 'quick'); event.stopPropagation();">Edit</button>
+              <button onclick="deleteQuickItem(this); event.stopPropagation();">Delete</button>
+            </div>
+            <div class="quick-icon">${icon}</div>
+            <div class="quick-label">${label}</div>
+          `;
+          quickGrid.appendChild(newQuickItem);
+        }
+        
+        closeModal('quickModal');
+        console.log('Quick form completed successfully');
+      } catch (error) {
+        console.error('Error saving quick access item:', error);
+        alert('Error saving quick access item. Please try again.');
+      }
+      
+      return false;
+    });
+  }
+
+  // Add team form submit handler
+  const teamForm = document.getElementById('teamForm');
+  if (teamForm) {
+    teamForm.addEventListener('submit', function(e) {
+      console.log('=== TEAM FORM SUBMIT EVENT TRIGGERED ===');
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      try {
+        const name = document.getElementById('teamName').value;
+        const position = document.getElementById('teamPosition').value;
+        const description = document.getElementById('teamDescription').value;
+        const level = document.getElementById('teamLevel').value;
+        
+        if (!name.trim() || !position.trim() || !level) {
+          alert('Please fill in all required fields');
+          return false;
+        }
+        
+        // Create new team member element
+        const teamSection = document.getElementById('teamSection');
+        const orgChart = document.getElementById('orgChart');
+        if (orgChart) {
+          // Find the correct org-level based on the selected level
+          const targetLevel = orgChart.querySelector(`.org-level[data-level="${level}"]`);
+          if (targetLevel) {
+            const teamGrid = targetLevel.querySelector('.team-grid');
+            if (teamGrid) {
+              const newMember = document.createElement('div');
+              newMember.className = 'card team-member';
+              newMember.setAttribute('data-id', 'team-' + Date.now());
+              newMember.setAttribute('draggable', 'true');
+              newMember.setAttribute('ondragstart', 'drag(event)');
+              
+              // Create initials for avatar
+              const initials = name.split(' ').map(word => word.charAt(0)).join('').toUpperCase();
+              
+              newMember.innerHTML = `
+                <div class="admin-controls">
+                  <button class="edit-btn" onclick="editTeamMember(this, 'team')">Edit</button>
+                  <button class="delete-btn" onclick="deleteTeamMember(this, 'team')">Delete</button>
+                </div>
+                <div class="card-body" style="text-align: center;">
+                  <div class="team-avatar">${initials}</div>
+                  <h3>${name}</h3>
+                  <p>${position}</p>
+                  ${description ? `<p class="team-description">${description}</p>` : ''}
+                </div>
+              `;
+              teamGrid.appendChild(newMember);
+            }
+          }
+        }
+        
+        closeModal('teamModal');
+        console.log('Team form completed successfully');
+      } catch (error) {
+        console.error('Error saving team member:', error);
+        alert('Error saving team member. Please try again.');
+      }
+      
+      return false;
+    });
+  }
+
+  // Add document form submit handler
+  const documentForm = document.getElementById('documentForm');
+  if (documentForm) {
+    documentForm.addEventListener('submit', function(e) {
+      console.log('=== DOCUMENT FORM SUBMIT EVENT TRIGGERED ===');
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      try {
+        const title = document.getElementById('docTitle').value;
+        const category = document.getElementById('docCategory').value;
+        const fileInput = document.getElementById('docFile');
+        
+        if (!title.trim() || !category || !fileInput.files.length) {
+          alert('Please fill in all fields and select a file');
+          return false;
+        }
+        
+        // Create new document element
+        let targetListId = '';
+        switch(category) {
+          case 'forms': targetListId = 'formsList'; break;
+          case 'policy': targetListId = 'policyList'; break;
+          case 'tools': targetListId = 'toolsList'; break;
+          case 'handbook': targetListId = 'handbookList'; break;
+        }
+        
+        const docList = document.getElementById(targetListId);
+        if (docList) {
+          const newDoc = document.createElement('li');
+          newDoc.className = 'doc-item';
+          newDoc.setAttribute('data-id', 'doc-' + Date.now());
+          newDoc.innerHTML = `
+            <div class="admin-controls">
+              <button onclick="editDocument(this, 'document')">Edit</button>
+              <button onclick="deleteDocument(this, 'document')">Delete</button>
+            </div>
+            <div class="doc-info">
+              <h4>${title}</h4>
+              <p>File: ${fileInput.files[0].name}</p>
+            </div>
+            <div class="doc-actions">
+              <button onclick="viewDocument('${newDoc.getAttribute('data-id')}')">View</button>
+              <button onclick="downloadDocument('${newDoc.getAttribute('data-id')}')">Download</button>
+            </div>
+          `;
+          docList.appendChild(newDoc);
+        }
+        
+        closeModal('documentModal');
+        console.log('Document form completed successfully');
+      } catch (error) {
+        console.error('Error saving document:', error);
+        alert('Error saving document. Please try again.');
+      }
+      
+      return false;
+    });
+  }
+
+  // Add photo form submit handler
+  const photoForm = document.getElementById('photoForm');
+  if (photoForm) {
+    photoForm.addEventListener('submit', function(e) {
+      console.log('=== PHOTO FORM SUBMIT EVENT TRIGGERED ===');
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      
+      try {
+        const title = document.getElementById('photoTitle').value;
+        const description = document.getElementById('photoDescription').value;
+        const category = document.getElementById('photoCategory').value;
+        const fileInput = document.getElementById('photoFiles');
+        
+        if (!title.trim() || !category || !fileInput.files.length) {
+          alert('Please fill in title, category and select photos');
+          return false;
+        }
+        
+        // Create new photo elements
+        let targetListId = '';
+        switch(category) {
+          case 'team-events': targetListId = 'teamEventsList'; break;
+          case 'south-main': targetListId = 'southMainList'; break;
+          case 'union-cross': targetListId = 'unionCrossList'; break;
+        }
+        
+        const photosList = document.getElementById(targetListId);
+        if (photosList) {
+          Array.from(fileInput.files).forEach((file, index) => {
+            const newPhoto = document.createElement('div');
+            newPhoto.className = 'photo-item';
+            newPhoto.setAttribute('data-id', 'photo-' + Date.now() + '-' + index);
+            
+            // Create a temporary URL for the uploaded file
+            const imageUrl = URL.createObjectURL(file);
+            
+            newPhoto.innerHTML = `
+              <div class="admin-controls">
+                <button onclick="editPhoto(this, 'photo')">Edit</button>
+                <button onclick="deletePhoto(this, 'photo')">Delete</button>
+              </div>
+              <div class="photo-container" style="width: 200px; height: 150px; overflow: hidden; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                <img src="${imageUrl}" alt="${title}" onclick="openPhotoViewer('${imageUrl}')" style="width: 100%; height: 100%; object-fit: cover;">
+              </div>
+              <div class="photo-info" style="text-align: center; margin-top: 8px;">
+                <h4>${title}</h4>
+                <p>${description}</p>
+              </div>
+            `;
+            photosList.appendChild(newPhoto);
+          });
+        }
+        
+        closeModal('photoModal');
+        console.log('Photo form completed successfully');
+      } catch (error) {
+        console.error('Error saving photos:', error);
+        alert('Error saving photos. Please try again.');
+      }
+      
+      return false;
+    });
+  }
+
   // Add comprehensive event handling for modal buttons
   document.querySelectorAll('.modal button[type="submit"]').forEach(btn => {
     btn.addEventListener('click', function(e) {
